@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 void main() => runApp(MyApp());
@@ -29,18 +31,21 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      top: false,
+        top: false,
         bottom: false,
         child: new Container(
-      child: Stack(
-        alignment: Alignment.topLeft,
-        children: <Widget>[],
-      ),
-    ));
+          child: Stack(
+            alignment: Alignment.topLeft,
+            children: <Widget>[
+              Page(),
+              GuillotineMenu(),
+            ],
+          ),
+        ));
   }
 }
 
-class Page extends StatelessWidget{
+class Page extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -48,22 +53,70 @@ class Page extends StatelessWidget{
       color: Color(0xff222222),
     );
   }
-
 }
 
-class GuillotineMenu extends StatefulWidget{
+class GuillotineMenu extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
     return new _GuillotineMenuState();
   }
-
 }
 
-class _GuillotineMenuState extends State<GuillotineMenu>{
+class _GuillotineMenuState extends State<GuillotineMenu> {
+  double rotationAngle = 0.0;
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Color(0xff333333),
+    MediaQueryData mediaQueryData = MediaQuery.of(context);
+    double screenHeight = mediaQueryData.size.height;
+    double screenWidth = mediaQueryData.size.width;
+
+    return Transform.rotate(
+      angle: rotationAngle,
+      origin: new Offset(24.0, 56.0),
+      alignment: Alignment.topLeft,
+      child: Material(
+        color: Colors.transparent,
+        child: Container(
+          width: screenWidth,
+          height: screenHeight,
+          color: Color(0xFF333333),
+          child: Stack(
+            children: <Widget>[
+              _buildMenuTitle(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMenuTitle() {
+    MediaQueryData mediaQueryData = MediaQuery.of(context);
+    double screenHeight = mediaQueryData.size.height;
+    double screenWidth = mediaQueryData.size.width;
+    return Positioned(
+      top: 32,
+      left: 40,
+      width: screenWidth,
+      height: 24,
+      child: Transform.rotate(
+        angle: pi / 2.0,
+        alignment: Alignment.topLeft,
+        origin: Offset.zero,
+        child: Opacity(
+          opacity: 1.0,
+          child: Text(
+            "Activity",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 2.0),
+          ),
+        ),
+      ),
     );
   }
 }
