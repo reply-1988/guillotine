@@ -77,7 +77,6 @@ class _GuillotineMenuState extends State<GuillotineMenu>
   _GuillotineAnimationStatus menuAnimationStatus =
       _GuillotineAnimationStatus.closed;
 
-
   ///Menu Icon onPress() handle
   _handleMenuOpenClose() {
     if (menuAnimationStatus == _GuillotineAnimationStatus.closed) {
@@ -120,7 +119,12 @@ class _GuillotineMenuState extends State<GuillotineMenu>
             parent: animationControllerMenu,
             curve: Curves.bounceOut,
             reverseCurve: Curves.bounceIn));
-
+    animationTitleFadeInOut = Tween(
+      begin: 1.0,
+      end: 0.0,
+    ).animate(new CurvedAnimation(
+        parent: animationControllerMenu,
+        curve: Interval(0.0, 0.5, curve: Curves.ease)));
   }
 
   @override
@@ -171,14 +175,21 @@ class _GuillotineMenuState extends State<GuillotineMenu>
         origin: Offset.zero,
         child: Opacity(
           opacity: 1.0,
-          child: Text(
-            "Activity",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 2.0),
+          child: Center(
+            child: Container(
+              child: Opacity(
+                opacity: animationTitleFadeInOut.value,
+                child: Text(
+                  "Activity",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 2.0),
+                ),
+              ),
+            ),
           ),
         ),
       ),
