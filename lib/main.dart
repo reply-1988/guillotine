@@ -63,25 +63,31 @@ class GuillotineMenu extends StatefulWidget {
 }
 
 ///Menu animation status
-enum _GuillotineAnimationStatus{closed, open, animating}
+enum _GuillotineAnimationStatus { closed, open, forward, reverse }
 
 class _GuillotineMenuState extends State<GuillotineMenu>
     with SingleTickerProviderStateMixin {
   AnimationController animationControllerMenu;
   Animation<double> animationMenu;
+  Animation<double> animationTitleFadeInOut;
   Animation _rotateAnimation;
   double rotationAngle = 0.0;
   double screenHeight;
   double screenWidth;
-  _GuillotineAnimationStatus menuAnimationStatus = _GuillotineAnimationStatus.closed;
+  _GuillotineAnimationStatus menuAnimationStatus =
+      _GuillotineAnimationStatus.closed;
 
 
   ///Menu Icon onPress() handle
   _handleMenuOpenClose() {
-    if (menuAnimationStatus == _GuillotineAnimationStatus.closed){
+    if (menuAnimationStatus == _GuillotineAnimationStatus.closed) {
       animationControllerMenu.forward().orCancel;
-    } else if(menuAnimationStatus == _GuillotineAnimationStatus.open){
+    } else if (menuAnimationStatus == _GuillotineAnimationStatus.open) {
       animationControllerMenu.reverse().orCancel;
+    } else if (menuAnimationStatus == _GuillotineAnimationStatus.forward) {
+      animationControllerMenu.reverse().orCancel;
+    } else if (menuAnimationStatus == _GuillotineAnimationStatus.reverse) {
+      animationControllerMenu.forward().orCancel;
     }
   }
 
@@ -92,8 +98,9 @@ class _GuillotineMenuState extends State<GuillotineMenu>
         AnimationController(vsync: this, duration: Duration(milliseconds: 1000))
           ..addListener(() {
             setState(() {});
-          })..addStatusListener((AnimationStatus status){
-            switch (status){
+          })
+          ..addStatusListener((AnimationStatus status) {
+            switch (status) {
               case AnimationStatus.completed:
                 menuAnimationStatus = _GuillotineAnimationStatus.open;
                 break;
@@ -101,17 +108,20 @@ class _GuillotineMenuState extends State<GuillotineMenu>
                 menuAnimationStatus = _GuillotineAnimationStatus.closed;
                 break;
               case AnimationStatus.forward:
+                menuAnimationStatus = _GuillotineAnimationStatus.forward;
+                break;
               case AnimationStatus.reverse:
-                menuAnimationStatus = _GuillotineAnimationStatus.animating;
+                menuAnimationStatus = _GuillotineAnimationStatus.reverse;
                 break;
             }
-        });
-    _rotateAnimation = Tween(
-      begin: -pi/2.0,end: 0.0
-    ).animate(animationControllerMenu);
+          });
+    _rotateAnimation = Tween(begin: -pi / 2.0, end: 0.0).animate(
+        new CurvedAnimation(
+            parent: animationControllerMenu,
+            curve: Curves.bounceOut,
+            reverseCurve: Curves.bounceIn));
 
   }
-
 
   @override
   void dispose() {
@@ -178,7 +188,14 @@ class _GuillotineMenuState extends State<GuillotineMenu>
   ///Menu Icon
   Widget _buildMenuIcon() {
     return Positioned(
-      child: IconButton(icon: const Icon(Icons.menu, color: Colors.white,), onPressed: () {_handleMenuOpenClose();}),
+      child: IconButton(
+          icon: const Icon(
+            Icons.menu,
+            color: Colors.white,
+          ),
+          onPressed: () {
+            _handleMenuOpenClose();
+          }),
       top: 32,
       left: 4.0,
     );
